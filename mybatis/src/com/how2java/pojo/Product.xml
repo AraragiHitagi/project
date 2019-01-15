@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <!--提示包的目录-->
+    <mapper namespace="com.how2java.pojo">
+<!--
+
+        <resultMap type="Product" id="productBean">
+            <id column="pid" property="id" />
+            <result column="pname" property="name" />
+            <result column="price" property="price" />
+            &lt;!&ndash; 多对一的关系 &ndash;&gt;
+            &lt;!&ndash; property: 指的是属性名称, javaType：指的是属性的类型 &ndash;&gt;
+            <association property="category" javaType="Category">
+                <id column="cid" property="id"/>
+                <result column="cname" property="name"/>
+            </association>
+        </resultMap>
+
+        &lt;!&ndash; 根据id查询Product, 关联将Orders查询出来 &ndash;&gt;
+        <select id="listProduct" resultMap="productBean">
+            select c.*, p.*, c.id 'cid', p.id 'pid', c.name 'cname', p.name 'pname' from category_ c left join product_ p on c.id = p.cid
+        </select>
+        &lt;!&ndash;更新类别&ndash;&gt;
+        <select id="getProduct" parameterType="_int" resultMap="productBean">
+            select c.*, p.*, c.id 'cid', p.id 'pid', c.name 'cname', p.name 'pname' from category_ c left join product_ p on c.id = p.cid WHERE p.id=#{id}
+        </select>
+        <update id="updateProduct" parameterType="Product">
+&#45;&#45;             category为p5中的属性，改变表里的值
+            UPDATE product_ set name=#{name}, cid=#{category.id} WHERE id=#{id}
+        </update>
+-->
+        <!--if语句-->
+        <!--<select id="listProduct" resultType="Product">
+            select * from product_
+            <if test="name!=null">
+                where name like concat('%',#{name},'%')
+            </if>
+        </select>-->
+
+        <!--<where>标签会进行自动判断-->
+        <!--如果任何条件都不成立，那么就在sql语句里就不会出现where关键字-->
+        <!--如果有任何条件成立，会自动去掉多出来的 and 或者 or。-->
+        <!--Mybatis里面没有else标签，但是可以使用when otherwise标签来达到这样的效果。-->
+<!--        <select id="listProduct" resultType="Product">
+            select * from product_
+            <where>
+                <if test="name!=null">
+                    and name like concat('%',#{name},'%')
+                </if>
+                <if test="price!=null and price!=0">
+                    and #{price} > price
+                </if>
+            </where>
+        </select>-->
+
+    <!--where语句 + choose when otherwise-->
+    <!--bind标签就像是再做一次字符串拼接，方便后续使用-->
+        <!--<select id="listProduct" resultType="Product">
+            <bind name="likename" value="'%'+name+'%'"></bind>
+            select * from product_
+            <where>
+                <choose>
+                    <when test="name!=null">
+                        and name like #{likename}
+                    </when>
+                    <when test="price!=null and price!=0">
+                        and price > #{price}
+                    </when>
+                    <otherwise>
+                        and id>1
+                    </otherwise>
+                </choose>
+            </where>
+        </select>-->
+
+        <!--foreach标签通常用于in 这样的语法里-->
+        <!--    collection：参数名称，根据Mapper接口的参数名确定，也可以使用@Param注解指定参数名
+            item：参数调用名称，通过此属性来获取集合单项的值
+            open：相当于prefix，即在循环前添加前缀
+            close：相当于suffix，即在循环后添加后缀
+            index：索引、下标
+            separator：分隔符，每次循环完成后添加此分隔符-->
+        <!--<select id="listProduct" resultType="Product">
+            SELECT * FROM product_
+            WHERE id in
+            <foreach item="item" index="index" collection="list"
+                     open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </select>-->
+
+        <update id="updateProduct" parameterType="Product" >
+            update product_
+            <set>
+                <if test="name != null">name=#{name},</if>
+                <if test="price != null">price=#{price}</if>
+            </set>
+            where id=#{id}
+        </update>
+
+    </mapper>

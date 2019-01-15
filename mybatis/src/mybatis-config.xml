@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <settings>
+        <!--使SQL语句在需要的时候才进行使用，比如一对多只查Category的情况-->
+        <!-- 打开延迟加载的开关 -->
+        <setting name="lazyLoadingEnabled" value="true" />
+        <!-- 将积极加载改为消息加载即按需加载 -->
+        <setting name="aggressiveLazyLoading" value="false"/>
+    </settings>
+
+    <typeAliases>
+        <!--自动扫描com.how2java.pojo下的类型-->
+        <!--后续配置文件Category.xml中使用resultType的时候，
+        可以直接使用Category,而不必写全com.how2java.pojo.Category-->
+        <package name="com.how2java.pojo"/>
+    </typeAliases>
+    <!--表示开启PageHelper插件-->
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+        </plugin>
+    </plugins>
+    <!--连接数据库-->
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <!--其作用主要是提供连接数据库用的驱动，
+                    数据库名称，编码方式，账号密码-->
+                <property name="driver" value="com.mysql.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://localhost:3306/how2java?characterEncoding=UTF-8"/>
+                <property name="username" value="root"/>
+                <property name="password" value="root"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <!--映射 *.xml-->
+    <mappers>
+
+        <mapper resource="com/how2java/pojo/Category.xml"/>
+        <mapper resource="com/how2java/pojo/Product.xml"/>
+        <mapper resource="com/how2java/pojo/Order.xml"/>
+        <mapper resource="com/how2java/pojo/OrderItem.xml"/>
+
+        <mapper class="com.how2java.mapper.CategoryMapper"/>
+        <mapper class="com.how2java.mapper.ProductMapper"/>
+        <mapper class="com.how2java.mapper.OrderItemMapper"/>
+        <mapper class="com.how2java.mapper.OrderMapper"/>
+
+    </mappers>
+
+</configuration>

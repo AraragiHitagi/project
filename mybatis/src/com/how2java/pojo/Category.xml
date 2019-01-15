@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--表示命名空间是com.how2java.pojo，
+    在后续调用sql语句的时候，会用到它-->
+<!--    <mapper namespace="com.how2java.pojo">
+        &lt;!&ndash;定义了一条sql语句&ndash;&gt;
+        &lt;!&ndash;这条sql语句用id: listCategory 进行标示以供后续代码调用。
+        resultType="Category" 表示返回的数据和Category关联起来，
+        这里本应该使用的是 com.how2java.pojo.Category,
+        但是因为上一步配置了别名，所以直接使用Category就行了&ndash;&gt;
+        <select id="listCategory" resultType="Category">
+            select * from category_
+        </select>
+    </mapper>-->
+
+    <mapper namespace="com.how2java.pojo">
+        <!--addCategory对应的插入sql语句，#{name}会自动获取c对象的name属性值-->
+        <insert id="addCategory" parameterType="Category" >
+            insert into category_ ( name ) values (#{name})
+        </insert>
+        <delete id="deleteCategory" parameterType="Category" >
+            delete from category_ where id= #{id}
+        </delete>
+        <select id="getCategory" parameterType="_int" resultType="Category">
+            select * from   category_  where id= #{id}
+        </select>
+        <update id="updateCategory" parameterType="Category" >
+            update category_ set name=#{name} where id=#{id}
+        </update>
+        <select id="listCategory" resultType="Category">
+            select * from   category_
+--          分页操作
+<!--            <if test="start!=null and count!=null">
+                limit #{start},#{count}
+            </if>-->
+--             分页有pageHelper自动做
+        </select>
+
+        <!--模糊查询-->
+        <select id="listCategoryByName" parameterType="String" resultType="Category">
+            select * from   category_ where name like concat('%',#{0},'%')
+        </select>
+
+        <!--多条件查询-->
+        <select id="listCategoryByIdAndName" parameterType="map" resultType="Category">
+            select * from   category_ where id>#{id} and name like concat('%',#{name},'%')
+        </select>
+
+        <!--一对多的查询-->
+            <!--构造resultMap-->
+        <resultMap type="Category" id="categoryBean">
+            <!--查询后返回对应名字的值，赋给Category中的property-->
+            <id column="cid" property="id" />
+            <result column="cname" property="name" />
+            <!-- 一对多的关系 -->
+            <!--products是Category中的属性-->
+            <!-- property: 指的是集合属性的值, ofType：指的是集合中元素的类型 -->
+            <collection property="products" ofType="Product">
+                <!--赋值给Product中的值-->
+                <id column="pid" property="id" />
+                <result column="pname" property="name" />
+                <result column="price" property="price" />
+            </collection>
+        </resultMap>
+        <!-- 关联查询分类和产品表 -->
+        <!--Category的id 字段 和Product的id字段同名，
+        Mybatis不知道谁是谁的，所以需要通过取别名cid,pid来区分。-->
+        <!--name字段 和 表名 也是同理。-->
+        <select id="listCategoryByOne2N" resultMap="categoryBean">
+            select c.*, p.*, c.id 'cid', p.id 'pid', c.name 'cname', p.name 'pname' from category_ c left join product_ p on c.id = p.cid
+        </select>
+
+
+
+    </mapper>
